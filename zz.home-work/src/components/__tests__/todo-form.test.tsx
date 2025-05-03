@@ -24,3 +24,39 @@ describe('TodoForm 단위 테스트', () => {
     expect(dateInput).toHaveValue('2024-07-01');
   });
 });
+
+describe('TodoForm', () => {
+  const setup = () => {
+    const setTodos = vi.fn();
+    render(<TodoForm todos={[]} setTodos={setTodos} />);
+    return { setTodos };
+  };
+
+  it('100자 이상의 할일을 입력하면 추가 버튼이 비활성화된다', () => {
+    setup();
+    const input = screen.getByLabelText(/New Todo/i);
+    const longText = 'a'.repeat(100);
+    fireEvent.change(input, { target: { value: longText } });
+    const button = screen.getByRole('button', { name: /Add Todo/i });
+    expect(button).toBeDisabled();
+  });
+
+  it('데드라인이 오늘 날짜 미만이면 추가 버튼이 비활성화된다', () => {
+    setup();
+    const input = screen.getByLabelText(/New Todo/i);
+    const deadlineInput = screen.getByLabelText(/Deadline/i);
+
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yyyy = yesterday.getFullYear();
+    const mm = String(yesterday.getMonth() + 1).padStart(2, '0');
+    const dd = String(yesterday.getDate()).padStart(2, '0');
+    const yesterdayStr = `${yyyy}-${mm}-${dd}`;
+
+    fireEvent.change(input, { target: { value: '테스트 할일' } });
+    fireEvent.change(deadlineInput, { target: { value: yesterdayStr } });
+
+    const button = screen.getByRole('button', { name: /Add Todo/i });
+    expect(button).toBeDisabled();
+  });
+});
