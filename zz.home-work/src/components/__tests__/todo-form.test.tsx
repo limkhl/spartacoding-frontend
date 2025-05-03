@@ -1,8 +1,8 @@
 // src/components/TodoForm.test.tsx
 import { render, screen, fireEvent } from '@testing-library/react';
-import { TodoForm } from './todo-form';
+import { TodoForm } from '../todo-form';
 import { vi } from 'vitest';
-import { Todo } from '../types/todo';
+import { Todo } from '../../types/todo';
 
 describe('TodoForm 단위 테스트', () => {
   const mockSetTodos = vi.fn();
