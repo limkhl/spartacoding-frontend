@@ -8,8 +8,14 @@ describe('Todo 통합 테스트', () => {
     const dateInput = screen.getByLabelText('Deadline');
     const addButton = screen.getByRole('button', { name: /Add Todo/i });
 
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+    fireEvent.change(dateInput, { target: { value: todayStr } });
+
     fireEvent.change(todoInput, { target: { value: '통합테스트 할 일' } });
-    fireEvent.change(dateInput, { target: { value: '2024-07-01' } });
     fireEvent.click(addButton);
 
     const todoText = screen.getByText('통합테스트 할 일');

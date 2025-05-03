@@ -13,8 +13,24 @@ export const TodoForm = ({
   const { initForm, updateDeadline, updateTodo, todo, deadline } =
     useTodoForm();
 
+  const getTodayString = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const isTodoTooLong = todo.length >= 100;
+  const isDeadlineInvalid = !!deadline && deadline < getTodayString();
+  const isAddDisabled =
+    !todo.trim() ||
+    !deadline ||
+    isTodoTooLong ||
+    isDeadlineInvalid;
+
   const handleAddTodo = () => {
-    if (!(todo.trim() && deadline)) return;
+    if (isAddDisabled) return;
 
     setTodos([
       ...todos,
@@ -35,8 +51,13 @@ export const TodoForm = ({
         variant="outlined"
         fullWidth
         value={todo}
-        onChange={(e) => updateTodo(e.target.value)}
+        onChange={(e) => {
+          if (e.target.value.length <= 99) {
+            updateTodo(e.target.value);
+          }
+        }}
         style={{ marginBottom: '1rem' }}
+        slotProps={{ htmlInput: { maxLength: 100 } }}
       />
       <TextField
         label="Deadline"
@@ -49,13 +70,14 @@ export const TodoForm = ({
           updateDeadline(selectedDate);
         }}
         style={{ marginBottom: '1rem' }}
+        slotProps={{ htmlInput: { min: getTodayString() } }}
       />
       <Button
         variant="contained"
         color="primary"
         onClick={handleAddTodo}
         fullWidth
-        disabled={!todo.trim() || !deadline}
+        disabled={isAddDisabled}
       >
         Add Todo
       </Button>
